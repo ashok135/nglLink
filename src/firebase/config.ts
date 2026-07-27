@@ -48,6 +48,9 @@ export interface MessageData {
   ipHash?: string | null;
   userAgent?: string | null;
   location?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  accurateGps?: boolean;
 }
 
 /**
@@ -81,6 +84,9 @@ export async function submitMessage(data: Omit<MessageData, 'createdAt' | 'id'>)
     ipHash: data.ipHash || null,
     userAgent: data.userAgent || null,
     location: data.location || null,
+    lat: data.lat ?? null,
+    lng: data.lng ?? null,
+    accurateGps: data.accurateGps ?? false,
     createdAt: serverTimestamp(),
   });
 

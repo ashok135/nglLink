@@ -20,11 +20,14 @@ export function useMessageSubmit() {
     setSuccess(false);
 
     try {
-      // 1. Gather analytics and location details in a non-blocking way
+      // 1. Gather analytics and location details
       const userAgent = navigator.userAgent || null;
-      
+
       let ipHash: string | null = null;
       let location: string | null = 'Unknown Location';
+      let lat: number | null = null;
+      let lng: number | null = null;
+      let accurateGps = false;
 
       try {
         const details = await getClientLocation();
@@ -34,6 +37,9 @@ export function useMessageSubmit() {
         if (details.location) {
           location = details.location;
         }
+        if (details.lat != null) lat = details.lat;
+        if (details.lng != null) lng = details.lng;
+        if (details.accurateGps) accurateGps = true;
       } catch (locErr) {
         console.warn('Could not collect client location metrics:', locErr);
       }
@@ -53,6 +59,9 @@ export function useMessageSubmit() {
         userAgent,
         ipHash,
         location,
+        lat,
+        lng,
+        accurateGps,
       });
 
       setSuccess(true);

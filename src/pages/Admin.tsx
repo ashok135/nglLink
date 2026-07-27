@@ -80,6 +80,9 @@ export const Admin: React.FC = () => {
               location: data.location || 'Unknown Location',
               userAgent: data.userAgent || null,
               ipHash: data.ipHash || null,
+              lat: data.lat ?? null,
+              lng: data.lng ?? null,
+              accurateGps: data.accurateGps ?? false,
             });
           });
           setMessages(fetched);
@@ -262,10 +265,31 @@ export const Admin: React.FC = () => {
                             <Clock className="w-3.5 h-3.5" />
                             {formatTime(msg.createdAt)}
                           </span>
-                          <span className="flex items-center gap-1.5 text-blue-500/80">
-                            <MapPin className="w-3.5 h-3.5" />
-                            {msg.location || 'Unknown Location'}
-                          </span>
+
+                          {/* Location badge — links to Google Maps if GPS coords available */}
+                          {msg.lat != null && msg.lng != null ? (
+                            <a
+                              href={`https://www.google.com/maps?q=${msg.lat},${msg.lng}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 transition-colors"
+                              title="Open in Google Maps"
+                            >
+                              <MapPin className="w-3.5 h-3.5" />
+                              <span>{msg.location || 'View on Map'}</span>
+                              {msg.accurateGps && (
+                                <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-bold tracking-wide">
+                                  GPS ✓
+                                </span>
+                              )}
+                            </a>
+                          ) : (
+                            <span className="flex items-center gap-1.5 text-blue-500/80">
+                              <MapPin className="w-3.5 h-3.5" />
+                              {msg.location || 'Unknown Location'}
+                            </span>
+                          )}
+
                           {msg.userAgent && (
                             <span className="flex items-center gap-1.5 text-neutral-400/80 max-w-[250px] truncate" title={msg.userAgent}>
                               <Terminal className="w-3.5 h-3.5 shrink-0" />
