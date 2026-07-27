@@ -75,10 +75,12 @@ export async function submitMessage(data: Omit<MessageData, 'createdAt' | 'id'>)
     return;
   }
 
-  // Submit to Firestore with a 1.5-second timeout to prevent UI hang.
-  // The message will still be written/queued locally by the SDK, but we resolve the promise early for better UX.
+  // Submit to Firestore — directly await so real errors surface properly
   const messagesCollection = collection(db, 'messages');
-  const writePromise = addDoc(messagesCollection, {
+
+  console.log('[Firebase] Writing message to Firestore...', { project: firebaseConfig.projectId });
+
+  await addDoc(messagesCollection, {
     name: data.name || 'Anonymous',
     message: data.message,
     ipHash: data.ipHash || null,
@@ -90,10 +92,7 @@ export async function submitMessage(data: Omit<MessageData, 'createdAt' | 'id'>)
     createdAt: serverTimestamp(),
   });
 
-  await Promise.race([
-    writePromise,
-    new Promise((resolve) => setTimeout(resolve, 1500))
-  ]);
+  console.log('[Firebase] Message written successfully ✓');
 }
 
 /**
