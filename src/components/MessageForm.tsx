@@ -60,7 +60,7 @@ export const MessageForm: React.FC<MessageFormProps> = ({ onSubmit, loading }) =
             value={message}
             onChange={handleMessageChange}
             disabled={loading}
-            placeholder="Who's ur crush??"
+            placeholder="Reply to me"
             rows={4}
             className="w-full px-6 py-8 rounded-[2rem] border-none bg-white/20 placeholder-white/50 text-white text-center text-lg focus:outline-none focus:ring-2 focus:ring-white/30 hover:bg-white/25 transition-all duration-300 disabled:opacity-50 resize-none font-medium leading-normal shadow-inner"
           />
