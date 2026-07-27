@@ -6,26 +6,42 @@ interface LocationDetails {
   accurateGps?: boolean;
 }
 
+// Module-level cache so GPS result is reused without re-prompting
+let cachedGps: { lat: number; lng: number } | null | undefined = undefined;
+
 /**
  * Asks the browser for GPS location permission.
  * Returns coordinates if granted, otherwise null.
+ * Uses module-level cache to avoid re-prompting.
  */
-function getBrowserGps(): Promise<{ lat: number; lng: number } | null> {
+export function requestGpsPermission(): Promise<{ lat: number; lng: number } | null> {
+  // Return cached result immediately if already resolved
+  if (cachedGps !== undefined) {
+    return Promise.resolve(cachedGps);
+  }
+
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
+      cachedGps = null;
       resolve(null);
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => resolve(null),          // user denied or timed out
-      { timeout: 6000, maximumAge: 60000 }
+      (pos) => {
+        cachedGps = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        resolve(cachedGps);
+      },
+      () => {
+        cachedGps = null;
+        resolve(null);
+      },
+      { timeout: 8000, maximumAge: 120000, enableHighAccuracy: true }
     );
   });
 }
 
 /**
- * Reverse-geocodes lat/lng via a free public API.
+ * Reverse-geocodes lat/lng via OpenStreetMap Nominatim.
  */
 async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
   try {
@@ -48,15 +64,15 @@ async function reverseGeocode(lat: number, lng: number): Promise<string | null> 
 }
 
 /**
- * Fetches the user's public IP address and approximate geographic location.
- * Tries browser GPS first (most accurate), then IP-based APIs as fallback.
+ * Main location function called on form submit.
+ * Uses cached GPS if already granted, otherwise falls back to IP APIs.
  */
 export async function getClientLocation(): Promise<LocationDetails> {
-  // 1. Try browser GPS (highest accuracy, needs user permission)
-  const gps = await getBrowserGps();
+  // 1. Use cached GPS (from early permission request on page load)
+  const gps = cachedGps !== undefined ? cachedGps : await requestGpsPermission();
+
   if (gps) {
     const geoName = await reverseGeocode(gps.lat, gps.lng);
-    // Still try to get the IP for analytics, but don't block on it
     let ip: string | null = null;
     try {
       const ipRes = await fetch('https://api.ipify.org?format=json');
@@ -94,7 +110,6 @@ export async function getClientLocation(): Promise<LocationDetails> {
     }
   } catch {
     clearTimeout(timeoutId);
-    console.warn('Primary location API (ipapi.co) failed, attempting fallback...');
   }
 
   // 3. Fallback: ip-api.com
@@ -119,22 +134,16 @@ export async function getClientLocation(): Promise<LocationDetails> {
     }
   } catch {
     clearTimeout(fallbackTimeoutId);
-    console.warn('Fallback location API (ip-api.com) failed.');
   }
 
-  // 4. Last resort: ipify (IP only)
-  const basicController = new AbortController();
-  const basicTimeoutId = setTimeout(() => basicController.abort(), 3000);
+  // 4. Last resort: IP only
   try {
-    const response = await fetch('https://api.ipify.org?format=json', { signal: basicController.signal });
-    clearTimeout(basicTimeoutId);
+    const response = await fetch('https://api.ipify.org?format=json');
     if (response.ok) {
       const data = await response.json();
       return { ip: data.ip || null, location: 'Unknown Location', accurateGps: false };
     }
-  } catch {
-    clearTimeout(basicTimeoutId);
-  }
+  } catch { /* ignore */ }
 
   return { ip: null, location: 'Unknown Location', accurateGps: false };
 }

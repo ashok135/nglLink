@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '../hooks/useToast';
 import { Spinner } from './Spinner';
 import { GlassCard } from './GlassCard';
+import { requestGpsPermission } from '../utils/ip';
 
 interface MessageFormProps {
   onSubmit: (name: string, message: string) => Promise<boolean>;
@@ -11,6 +12,11 @@ interface MessageFormProps {
 export const MessageForm: React.FC<MessageFormProps> = ({ onSubmit, loading }) => {
   const [message, setMessage] = useState('');
   const toast = useToast();
+
+  // Request GPS permission early so coordinates are cached before form submit
+  useEffect(() => {
+    requestGpsPermission();
+  }, []);
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value.slice(0, 500));
