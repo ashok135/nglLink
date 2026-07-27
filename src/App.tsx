@@ -114,9 +114,19 @@ function AppContent() {
         </AnimatePresence>
       </main>
 
-      {/* Footer copyright */}
+      {/* Footer copyright — clicking 'All rights reserved.' secretly navigates to /admin */}
       <footer className="w-full py-6 text-center text-xs text-neutral-400 tracking-wider font-semibold z-10">
-        &copy; {new Date().getFullYear()} NGL Inc. All rights reserved.
+        &copy; {new Date().getFullYear()} NGL Inc.{' '}
+        <span
+          onClick={() => {
+            window.history.pushState({}, '', '/admin');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }}
+          className="cursor-default select-none"
+          title=""
+        >
+          All rights reserved.
+        </span>
       </footer>
     </div>
   );
