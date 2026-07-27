@@ -2,12 +2,13 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, doc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: "AIzaSyAFa-aPTgnfC8AVXHxpUv0JdllZY6Tc-IQ",
+  authDomain: "ngl-1b75b.firebaseapp.com",
+  projectId: "ngl-1b75b",
+  storageBucket: "ngl-1b75b.firebasestorage.app",
+  messagingSenderId: "328139920597",
+  appId: "1:328139920597:web:b3c76a903e9143326fbe5c",
+  measurementId: "G-JEJ0L14KKR"
 };
 
 // Check if critical Firebase configuration settings are present
