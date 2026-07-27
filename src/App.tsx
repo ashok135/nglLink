@@ -6,15 +6,8 @@ import { SuccessState } from './components/SuccessState';
 import { Admin } from './pages/Admin';
 import { useMessageSubmit } from './hooks/useMessageSubmit';
 import { isDemoMode } from './firebase/config';
-import { AlertTriangle, AlertCircle, X } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// Helper function for state-based client routing
-const navigate = (path: string) => {
-  window.history.pushState({}, '', path);
-  const navEvent = new PopStateEvent('popstate');
-  window.dispatchEvent(navEvent);
-};
 
 function AppContent() {
   const { sendMessage, loading, success, reset } = useMessageSubmit();
@@ -77,26 +70,7 @@ function AppContent() {
         </motion.div>
       )}
 
-      {/* NGL Top Bar with navigation items */}
-      <header className="w-full max-w-sm sm:max-w-xl flex justify-between items-center py-4 z-10 text-neutral-400">
-        {/* Click warning triangle to secretly navigate to /admin */}
-        <button 
-          onClick={() => navigate(isAdminRoute ? '/' : '/admin')}
-          className="p-2 hover:bg-neutral-100 rounded-full transition-colors cursor-pointer" 
-          aria-label="Toggle Admin"
-          title="Toggle Admin View"
-        >
-          <AlertTriangle className={`w-6 h-6 stroke-[1.8] ${isAdminRoute ? 'text-rose-500' : ''}`} />
-        </button>
-        <button 
-          onClick={() => navigate('/')}
-          className="p-2 hover:bg-neutral-100 rounded-full transition-colors cursor-pointer" 
-          aria-label="Go Home"
-          title="Return to main page"
-        >
-          <X className="w-6 h-6 stroke-[1.8]" />
-        </button>
-      </header>
+
 
       {/* Main card area with animations */}
       <main className="w-full max-w-sm sm:max-w-4xl flex-1 flex flex-col justify-center items-center z-10 py-6">

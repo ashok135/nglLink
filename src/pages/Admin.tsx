@@ -167,6 +167,16 @@ export const Admin: React.FC = () => {
                   >
                     Authenticate
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.history.pushState({}, '', '/');
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                    }}
+                    className="w-full mt-2 py-3 border border-white/20 hover:bg-white/10 text-white font-semibold rounded-full text-center transition-all duration-300 active:scale-[0.98] cursor-pointer text-sm"
+                  >
+                    Back to Send Message
+                  </button>
                 </form>
               </div>
             </div>
@@ -195,13 +205,24 @@ export const Admin: React.FC = () => {
                 </div>
               </div>
               
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-sm font-bold rounded-full hover:bg-neutral-800 transition-all duration-300 active:scale-[0.97] cursor-pointer shadow-md shrink-0"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Log Out</span>
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    window.history.pushState({}, '', '/');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-neutral-100 text-neutral-800 text-sm font-bold rounded-full hover:bg-neutral-200 transition-all duration-300 active:scale-[0.97] cursor-pointer shadow-sm shrink-0"
+                >
+                  <span>Go Home</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-sm font-bold rounded-full hover:bg-neutral-800 transition-all duration-300 active:scale-[0.97] cursor-pointer shadow-md shrink-0"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
+              </div>
             </div>
 
             {/* List Feed */}
